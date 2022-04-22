@@ -3,7 +3,7 @@ using HangmanRenderer.Renderer;
 
 namespace Hangman.Core.Game
 {
-    
+
 
     public class HangmanGame
     {
@@ -11,9 +11,10 @@ namespace Hangman.Core.Game
         private string _guessProgress;
 
         private string[] words = new string[] { "came", "decide", "duplicate", "source" };
-        //private List<string[]> handmanwords = new List<string[]>("ujs","jhsijjis","mjsji", "jwjss");
+        private int _noOflives = 6;
+        private char letter;
         private GallowsRenderer _renderer;
-        
+
 
         public HangmanGame()
         {
@@ -23,11 +24,10 @@ namespace Hangman.Core.Game
         {
             _guessProgress = _guessword;
             Random random = new Random();
-            
-            for(int i = 0; i < words.Length; i++)
+            _guessword = words[random.Next(words.Length)];
+
+            for (int i = 0; i < _guessword.Length; i++)
             {
-                int index = random.Next(words.Length); 
-                word = words[index];
                 _guessProgress += "_";
             }
         }
@@ -35,28 +35,51 @@ namespace Hangman.Core.Game
         {
             return _guessProgress;
         }
-        public void AddGuess(char letter)
+        public void AddGuess()
         {
-            while (true)
-            {
-                char[] guessProgressArray = _guessProgress.ToCharArray();
 
+           
+                char[] guessProgressArray = _guessProgress.ToCharArray();
+                bool correct = false;
+               
+                while (_noOflives > 0)
+                {
+                _renderer.Render(5, 5, _noOflives);
                 for (int index = 0; index < _guessProgress.Length; index++)
                 {
                     if (_guessword[index] == letter)
                     {
                         guessProgressArray[index] = letter;
+                        correct = true;
 
                     }
                 }
                 _guessProgress = new string(guessProgressArray);
+                Console.SetCursorPosition(0, 18);
+                Console.WriteLine(_guessProgress);
+                if (!correct)
+                {
+                    _noOflives--;
+                    _renderer.Render(5, 5, _noOflives);
+                }
+                }
+                Console.SetCursorPosition(2, 22);
+                if (_noOflives == 0)
+                {
+                    Console.WriteLine("Sorry you died.");
+                }
+                else
+                {
+                    Console.WriteLine($"You Survived /n You won ");
+                }
+               
+            
 
-            }
         }
         public void Run()
         {
-            int lives = 6;
-            _renderer.Render(5, 5, lives);
+
+            _renderer.Render(5, 5, _noOflives);
 
             Console.SetCursorPosition(0, 13);
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -67,14 +90,37 @@ namespace Hangman.Core.Game
             Console.ForegroundColor = ConsoleColor.Green;
 
             Console.Write("What is your next guess: ");
-            while (true)
-            {
-                _guessword = Console.ReadLine();
-
-            }
-            lives--;
+            AddGuess();
+               /* _renderer.Render(5, 5, _noOflives);
+                Console.SetCursorPosition(0, 17);
+                _guessword = Console.ReadLine();*/
+                /*_guessword = Console.ReadLine();
+                char[] guessProgressArray = _guessProgress.ToCharArray();
+                //Console.SetCursorPosition(0, 17);
+                bool correct = false;
+                for (int i = 0; i < guess.Length; i++)
+                {
+                    if (guess[i] == playerguess)
+                    {
+                        guessProgressArray[i] = guess[i];
+                        correct = true;
+                    }
+                }
+                _guessProgress = new string(guessProgressArray);*/
+                /* Console.SetCursorPosition(0, 18);
+                 Console.WriteLine(_guessProgress);
+                 if (!correct)
+                 {
+                     noOflives--;
+                     _renderer.Render(5, 5, noOflives);
+                 }
+             }*/
             
+           
         }
+
 
     }
 }
+
+
